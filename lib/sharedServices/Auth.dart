@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../models/User.dart';
 import '../utilities/JWT.dart';
 import '../utilities/ApiGateway.dart';
@@ -36,6 +37,16 @@ class AuthContainer extends StatefulWidget {
 class AuthContainerState extends State<AuthContainer> {
   User user;
 
+  AuthContainerState() {
+    final storage = new FlutterSecureStorage();
+    Future.wait([storage.read(key: 'idToken'), storage.read(key: 'accessToken'), storage.read(key: 'refreshToken')])
+    .then((List results) {
+      if (results != null && results[0] != null && results[1] != null && results[2] != null) {
+        updateUserTokens(identityToken: results[0], accessToken: results[1], refreshToken: [2]);
+      }
+    });
+  }
+
   bool isAuthenticated() {
     return user != null && (JWT.isActive(user.identityToken) || JWT.isActive(user.refreshToken));
   }
@@ -51,9 +62,7 @@ class AuthContainerState extends State<AuthContainer> {
       if (res.containsKey('error')) {
         return res['error'];
       } else {
-        setState(() {
-          user = User('Joe', 'Thomaschaske', email, res['idToken'], res['accessToken'], res['refreshToken']);
-        });
+        await updateUserInfo(firstName: 'Joe', lastName: 'T', email: email, identityToken: res['idToken'], accessToken: res['accessToken'], refreshToken: res['refreshToken']);
         return 'ok';
       }
     } catch(e) {
@@ -73,7 +82,11 @@ class AuthContainerState extends State<AuthContainer> {
     return res;
   }
 
-  void updateUserTokens({identityToken, accessToken, refreshToken}) {
+  Future<void> updateUserTokens({identityToken, accessToken, refreshToken}) async {
+    final storage = new FlutterSecureStorage();
+    await storage.write(key: 'idToken', value: identityToken);
+    await storage.write(key: 'accessToken', value: accessToken);
+    await storage.write(key: 'refreshToken', value: refreshToken);
     setState(() {
       user.identityToken = identityToken;
       user.accessToken = accessToken;
@@ -81,13 +94,19 @@ class AuthContainerState extends State<AuthContainer> {
     });
   }
 
-  void updateUserInfo({firstName, lastName, email, identityToken, accessToken, refreshToken}) {
+  Future <void> updateUserInfo({firstName, lastName, email, identityToken, accessToken, refreshToken}) async {
+    final storage = new FlutterSecureStorage();
+    await storage.write(key: 'idToken', value: identityToken);
+    await storage.write(key: 'accessToken', value: accessToken);
+    await storage.write(key: 'refreshToken', value: refreshToken);
     if (user != null) {
       setState(() {
         user.firstName = firstName;
         user.lastName = lastName;
         user.email = email;
         user.identityToken = identityToken;
+        user.accessToken =accessToken;
+        user.refreshToken =refreshToken;
       });
     } else {
       setState(() {
