@@ -37,17 +37,18 @@ class AuthContainer extends StatefulWidget {
 class AuthContainerState extends State<AuthContainer> {
   User user;
 
-  AuthContainerState() {
-    final storage = new FlutterSecureStorage();
-    Future.wait([storage.read(key: 'idToken'), storage.read(key: 'accessToken'), storage.read(key: 'refreshToken')])
-    .then((List results) {
-      if (results != null && results[0] != null && results[1] != null && results[2] != null) {
-        updateUserTokens(identityToken: results[0], accessToken: results[1], refreshToken: [2]);
-      }
-    });
-  }
+  // AuthContainerState() {
+  //   final storage = new FlutterSecureStorage();
+  //   Future.wait([storage.read(key: 'idToken'), storage.read(key: 'accessToken'), storage.read(key: 'refreshToken')])
+  //   .then((List results) {
+  //     if (results != null && results[0] != null && results[1] != null && results[2] != null) {
+  //       updateUserTokens(identityToken: results[0], accessToken: results[1], refreshToken: results[2]);
+  //     }
+  //   });
+  // }
 
   bool isAuthenticated() {
+    //if they're null read from storage and set the shit
     return user != null && (JWT.isActive(user.identityToken) || JWT.isActive(user.refreshToken));
   }
 

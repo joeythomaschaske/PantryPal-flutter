@@ -14,10 +14,10 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "CA2A437330DD6D2F7E5E2242BD03D36A"
+               BlueprintIdentifier = "3106507E1CADB2B5ECF7A03366A560ED"
+               BuildableName = "libflutter_secure_storage.a"
                BlueprintName = "flutter_secure_storage"
-               ReferencedContainer = "container:Pods.xcodeproj"
-               BuildableName = "libflutter_secure_storage.a">
+               ReferencedContainer = "container:Pods.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
