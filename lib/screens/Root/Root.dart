@@ -2,40 +2,50 @@ import 'package:flutter/material.dart';
 import '../../sharedServices/Auth.dart';
 import '../Home/Home.dart';
 import '../Register/Register.dart';
+import '../Init/Init.dart';
 import '../../contstants.dart' as Constants;
 
-class Root extends StatelessWidget {
+// good example
+//https://github.com/flutter/flutter/issues/19194
+//make an auth route that returns a loading screen
+//if authenticated navigate to home
+//otherwise navigate to login
+class Root extends StatefulWidget {
+  @override
+  State createState() => RootState();
+}
+
+class RootState extends State<Root> {
   static Map<String, Widget> routeTable = {
-    Constants.HOME :  Home()
+    Constants.INIT: Init(),
+    Constants.REGISTER : Register(),
+    Constants.HOME: Home()
   };
+  bool loaded = false;
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      initialRoute: '/',
-      onGenerateRoute: (routeSettings) {
-        AuthContainerState data = AuthContainer.of(context);
-        WidgetBuilder screen;
-        if (data.isAuthenticated()) {
-          screen = (context) => SafeArea(
-            child: Material(
-              type: MaterialType.transparency,
-              child: routeTable[routeSettings.name]
-            )
+        initialRoute: '/',
+        onGenerateRoute: (routeSettings) {
+          AuthContainerState data = AuthContainer.of(context);
+          WidgetBuilder screen;
+          if (routeSettings.name ==Constants.INIT) {
+            screen = (context) => Init();
+          } else if (data.isAuthenticated()) {
+            screen = (context) => SafeArea(
+                child: Material(
+                    type: MaterialType.transparency,
+                    child: routeTable[routeSettings.name]));
+          } else {
+            screen = (conext) => SafeArea(
+                child: Material(
+                    type: MaterialType.transparency, child: Register()));
+          }
+          return new MaterialPageRoute(
+            builder: screen,
+            settings: routeSettings,
           );
-        } else {
-          screen = (conext) => SafeArea(
-            child: Material(
-              type: MaterialType.transparency,
-              child: Register()
-            )
-          );
-        }
-        return new MaterialPageRoute(
-          builder: screen,
-          settings: routeSettings,
-        );
-      }
-    );
+        });
   }
 }

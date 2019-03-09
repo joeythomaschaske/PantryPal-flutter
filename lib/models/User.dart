@@ -5,6 +5,7 @@ class User {
   String identityToken;
   String accessToken;
   String refreshToken;
+  int refreshTokenExpiration;
 
   User(
     this.firstName,
@@ -12,6 +13,7 @@ class User {
     this.email,
     this.identityToken,
     this.accessToken,
-    this.refreshToken
+    this.refreshToken,
+    this.refreshTokenExpiration
   );
 }

@@ -4,12 +4,11 @@ import './sharedServices/Environment.dart';
 import './screens/Root/Root.dart';
 import './contstants.dart';
 
-void main() => runApp(
+void main() async  => runApp(
   EnvironmentContainer(
     baseUrl: DEV_API_BASE_URL,
     child: AuthContainer(
-      child:Root()
+      child: Root()
     )
   )
-  
 );

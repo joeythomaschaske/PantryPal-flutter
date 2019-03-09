@@ -1,6 +1,10 @@
 import 'dart:convert';
 
 class JWT {
+  static bool refreshTokenActive(int refreshTokenExpiration) {
+    return refreshTokenExpiration > DateTime.now().toUtc().millisecondsSinceEpoch;
+  }
+
   static bool isActive(String token) {
     Map<String, dynamic> claims = decode(token);
     double now = DateTime.now().toUtc().millisecondsSinceEpoch / 1000;
