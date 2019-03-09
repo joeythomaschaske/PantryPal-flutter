@@ -248,7 +248,7 @@ class RegisterState extends State<Register> {
       child = buildRegisterForm();
     }
 
-    return (Container(
+    return (Scaffold(body: Container(
         height: double.infinity,
         width: double.infinity,
         decoration: BoxDecoration(
@@ -263,7 +263,7 @@ class RegisterState extends State<Register> {
         child: Padding(padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom), child:Center(
             child: SingleChildScrollView(child: Container(
                 width: MediaQuery.of(context).size.width * .7,
-                child: child))))));
+                child: child)))))));
   }
 
   @override
