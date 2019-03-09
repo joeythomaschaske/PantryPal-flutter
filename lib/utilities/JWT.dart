@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 class JWT {
-  static bool refreshTokenActive(int refreshTokenExpiration) {
-    return refreshTokenExpiration > DateTime.now().toUtc().millisecondsSinceEpoch;
+  static bool refreshTokenActive(String refreshTokenExpiration) {
+    return refreshTokenExpiration != null && int.parse(refreshTokenExpiration) > DateTime.now().toUtc().millisecondsSinceEpoch;
   }
 
   static bool isActive(String token) {

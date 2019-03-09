@@ -37,10 +37,8 @@ class AuthContainer extends StatefulWidget {
 class AuthContainerState extends State<AuthContainer> {
   User user;
 
-
   Future<bool> loadAuthFromStorage() async {
     final storage = new FlutterSecureStorage();
-    await storage.deleteAll();
     List results = await Future.wait([
       storage.read(key: 'idToken'),
       storage.read(key: 'accessToken'), 
@@ -87,7 +85,7 @@ class AuthContainerState extends State<AuthContainer> {
           identityToken: res['idToken'],
           accessToken: res['accessToken'], 
           refreshToken: res['refreshToken'],
-          refreshTokenExpiration: res['refreshTokenExpiration']
+          refreshTokenExpiration: res['refreshTokenExpiration'].toString()
         );
         return 'ok';
       }
@@ -97,10 +95,12 @@ class AuthContainerState extends State<AuthContainer> {
     }
   }
 
-  Future<bool> logout() async {
+  Future<bool> logout(BuildContext context) async {
     //call api logout method
     bool res = await ApiGateway.signOut(context);
     if (res) {
+      final storage = new FlutterSecureStorage();
+      await storage.deleteAll();
       setState(() {
         user = null;
       });
@@ -113,7 +113,7 @@ class AuthContainerState extends State<AuthContainer> {
     await storage.write(key: 'idToken', value: identityToken);
     await storage.write(key: 'accessToken', value: accessToken);
     await storage.write(key: 'refreshToken', value: refreshToken);
-    await storage.write(key: 'refreshTokenExpiration', value: refreshTokenExpiration);
+    await storage.write(key: 'refreshTokenExpiration', value: refreshTokenExpiration.toString());
     setState(() {
       user.identityToken = identityToken;
       user.accessToken = accessToken;
@@ -130,7 +130,7 @@ class AuthContainerState extends State<AuthContainer> {
     await storage.write(key: 'firstName', value: firstName);
     await storage.write(key: 'lastName', value: lastName);
     await storage.write(key: 'email', value: email);
-    await storage.write(key: 'refreshTokenExpiration', value: refreshTokenExpiration);
+    await storage.write(key: 'refreshTokenExpiration', value: refreshTokenExpiration.toString());
     if (user != null) {
       setState(() {
         user.firstName = firstName;

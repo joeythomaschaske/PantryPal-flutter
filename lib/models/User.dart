@@ -5,7 +5,7 @@ class User {
   String identityToken;
   String accessToken;
   String refreshToken;
-  int refreshTokenExpiration;
+  String refreshTokenExpiration;
 
   User(
     this.firstName,

@@ -8,18 +8,24 @@ class Init extends StatefulWidget {
 }
 
 class InitState extends State<Init> {
+  bool loaded = false;
 
   @override
   Widget build(BuildContext context) {
-    AuthContainerState data = AuthContainer.of(context);
-    data.loadAuthFromStorage()
-    .then((authenticated) {
-      if (authenticated) {
-        Navigator.of(context).pushNamedAndRemoveUntil(Constants.HOME, (Route<dynamic> route) => false);
-      } else {
-        Navigator.of(context).pushNamedAndRemoveUntil(Constants.HOME, (Route<dynamic> route) => false);
-      }
-    });
+    if (!loaded) {
+      AuthContainerState data = AuthContainer.of(context);
+      data.loadAuthFromStorage()
+      .then((authenticated) {
+        setState(() {
+          loaded = true;
+        });
+        if (authenticated) {
+          Navigator.of(context).pushNamedAndRemoveUntil(Constants.HOME, (Route<dynamic> route) => false);
+        } else {
+          Navigator.of(context).pushNamedAndRemoveUntil(Constants.REGISTER, (Route<dynamic> route) => false);
+        }
+      });
+    }
     return Container();
   }
 }

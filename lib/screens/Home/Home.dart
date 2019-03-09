@@ -8,11 +8,9 @@ class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     AuthContainerState a = AuthContainer.of(context);
-    return (
-      Scaffold(
-        body: Center(
-          child: ListView(
-            children: <Widget>[
+    List<Widget> children;
+    if (a.user != null) {
+      children = <Widget>[
               Text(
                 a.user.firstName
               ),
@@ -31,14 +29,22 @@ class Home extends StatelessWidget {
               Text(
                 a.user.refreshToken
               ),
-            ],
+            ];
+    } else {
+      children = <Widget>[Container()];
+    }
+    return (
+      Scaffold(
+        body: Center(
+          child: ListView(
+            children:children ,
           )
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            a.logout()
+            a.logout(context)
             .then((res) {
-              Navigator.of(context).pushNamedAndRemoveUntil(Constants.HOME, (Route<dynamic> route) => false);
+              Navigator.of(context).pushNamedAndRemoveUntil(Constants.REGISTER, (Route<dynamic> route) => false);
             });
           }
         )

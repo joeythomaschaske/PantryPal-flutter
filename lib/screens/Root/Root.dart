@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../sharedServices/Auth.dart';
 import '../Home/Home.dart';
 import '../Register/Register.dart';
 import '../Init/Init.dart';
@@ -21,31 +20,36 @@ class RootState extends State<Root> {
     Constants.REGISTER : Register(),
     Constants.HOME: Home()
   };
-  bool loaded = false;
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
         initialRoute: '/',
-        onGenerateRoute: (routeSettings) {
-          AuthContainerState data = AuthContainer.of(context);
-          WidgetBuilder screen;
-          if (routeSettings.name ==Constants.INIT) {
-            screen = (context) => Init();
-          } else if (data.isAuthenticated()) {
-            screen = (context) => SafeArea(
-                child: Material(
-                    type: MaterialType.transparency,
-                    child: routeTable[routeSettings.name]));
-          } else {
-            screen = (conext) => SafeArea(
-                child: Material(
-                    type: MaterialType.transparency, child: Register()));
-          }
-          return new MaterialPageRoute(
-            builder: screen,
-            settings: routeSettings,
-          );
-        });
+        routes: {
+          Constants.INIT : (context) => Init(),
+          Constants.REGISTER : (context) => Register(),
+          Constants.HOME : (context) => Home()
+        },
+        // onGenerateRoute: (routeSettings) {
+        //   AuthContainerState data = AuthContainer.of(context);
+        //   WidgetBuilder screen = (context) => Container();
+        //   if (routeSettings.name == Constants.INIT) {
+        //     screen = (context) => Init();
+        //   } else if (data.isAuthenticated()) {
+        //     screen = (context) => SafeArea(
+        //         child: Material(
+        //             type: MaterialType.transparency,
+        //             child: routeTable[routeSettings.name]));
+        //   } else {
+        //     screen = (conext) => SafeArea(
+        //         child: Material(
+        //             type: MaterialType.transparency, child: Register()));
+        //   }
+        //   return new MaterialPageRoute(
+        //     builder: screen,
+        //     settings: routeSettings,
+        //   );
+        // }
+      );
   }
 }

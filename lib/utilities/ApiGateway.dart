@@ -68,7 +68,10 @@ class ApiGateway {
     if (!JWT.isActive(auth.user.identityToken)) {
       await ApiGateway.refresh(context);
     }
-    final response = await http.post(environment.baseUrl + '/refresh',
+    final response = await http.post(environment.baseUrl + '/signOut',
+      headers: {
+        'Authorization' : 'Bearer ' + auth.user.identityToken
+      },
       body : json.encode({
         'idToken' :auth.user.identityToken,
         'accessToken' :auth.user.accessToken,
@@ -80,11 +83,6 @@ class ApiGateway {
     if (body.containsKey('error')) {
       return false;
     }
-
-    String refreshToken = body['refreshToken'];
-    String accessToken = body['accessToken'];
-    String identityToken = body['identityToken'];
-    auth.updateUserTokens(identityToken: identityToken, accessToken: accessToken, refreshToken: refreshToken);
     return true;
   }
 }
