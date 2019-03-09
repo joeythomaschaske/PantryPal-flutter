@@ -26,7 +26,7 @@ class RegisterState extends State<Register> {
   signIn() async {
     AuthContainerState auth = AuthContainer.of(context);
     String res = await auth.login(emailController.text, passwordController.text, context);
-    if (res == 'error') {
+    if (res != 'ok') {
       //display error
     } else {
       Navigator.of(context).pushNamedAndRemoveUntil(
