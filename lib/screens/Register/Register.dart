@@ -19,18 +19,26 @@ class RegisterState extends State<Register> {
   TextEditingController lastNameController = TextEditingController();
 
   String emailValidationResult;
+  String errorMessage;
   bool showLogin = false;
   bool showRegister = false;
   bool showMenu = true;
+  bool registering = false;
 
   signIn() async {
+    setState(() {
+      registering = true;
+    });
     AuthContainerState auth = AuthContainer.of(context);
-    String res = await auth.login(emailController.text, passwordController.text, context);
+    String res = await auth.login(
+        emailController.text, passwordController.text, context);
     if (res != 'ok') {
-      //display error
+      setState(() {
+      registering = false;
+    });
     } else {
       Navigator.of(context).pushNamedAndRemoveUntil(
-        Constants.HOME, (Route<dynamic> route) => false);
+          Constants.HOME, (Route<dynamic> route) => false);
     }
   }
 
@@ -41,17 +49,20 @@ class RegisterState extends State<Register> {
   }
 
   signUp() async {
+    setState(() {
+      registering = true;
+    });
     AuthContainerState data = AuthContainer.of(context);
-    String res = await data.register(firstNameController.text, lastNameController.text, emailController.text, passwordController.text);
+    String res = await data.register(firstNameController.text,
+        lastNameController.text, emailController.text, passwordController.text);
     if (res == 'ok') {
       Navigator.of(context).pushNamedAndRemoveUntil(
-        Constants.HOME, (Route<dynamic> route) => false);
-    } else if (res == 'duplicate') {
-      print('duplicate');
+          Constants.HOME, (Route<dynamic> route) => false);
     } else {
-      print('error');
+      setState(() {
+      registering = true;
+    });
     }
-    
   }
 
   Function enableSignUp() {
@@ -61,7 +72,14 @@ class RegisterState extends State<Register> {
     String password = passwordController.text;
     String confirmPassword = confirmPasswordController.text;
 
-    return firstName.isNotEmpty && lastName.isNotEmpty && email.isNotEmpty && password.isNotEmpty && confirmPassword.isNotEmpty && password == confirmPassword ? signUp : null;
+    return firstName.isNotEmpty &&
+            lastName.isNotEmpty &&
+            email.isNotEmpty &&
+            password.isNotEmpty &&
+            confirmPassword.isNotEmpty &&
+            password == confirmPassword
+        ? signUp
+        : null;
   }
 
   showLogInForm() {
@@ -121,66 +139,70 @@ class RegisterState extends State<Register> {
               fontWeight: FontWeight.bold,
               color: Colors.white),
         ),
-        InputButton(
-          "Sign In",
-          showLogInForm
-        ),
-        InputButton(
-          "Sign Up",
-          showRegisterForm
-        )
+        InputButton("Sign In", showLogInForm),
+        InputButton("Sign Up", showRegisterForm)
       ],
     );
   }
 
   Widget buildLoginForm() {
-    return  Column(
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        Icon(
-          IconData(0xe547, fontFamily: 'MaterialIcons'),
-          size: 50,
-          color: Colors.white,
-        ),
-        Text(
-          "Pantry Pal",
+    List<Widget> formChildren = [
+      Icon(
+        IconData(0xe547, fontFamily: 'MaterialIcons'),
+        size: 50,
+        color: Colors.white,
+      ),
+      Text(
+        "Pantry Pal",
+        style: TextStyle(
+            fontSize: 30,
+            fontFamily: 'Helvetica',
+            fontWeight: FontWeight.bold,
+            color: Colors.white),
+      ),
+      InputText(
+        controller: emailController,
+        hint: 'your@email.com',
+        label: 'Email',
+        validator: (email) => validateEmail(email),
+        error: emailValidationResult,
+      ),
+      SizedBox(
+        height: 10,
+      ),
+      InputText(
+        controller: passwordController,
+        hint: 'Ic3 Cre4m L0ck',
+        label: 'Password',
+        password: true,
+      )
+    ];
+
+    if (registering) {
+      formChildren.add(SizedBox(
+        height: 10,
+      ));
+      formChildren.add(CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white)));
+    } else {
+      formChildren.add(InputButton("Sign In", enableSignIn()));
+      formChildren.add(InputButton("Back", back));
+    }
+    if (errorMessage.isNotEmpty) {
+      formChildren.insert(0, Text(
+          errorMessage,
           style: TextStyle(
               fontSize: 30,
               fontFamily: 'Helvetica',
               fontWeight: FontWeight.bold,
-              color: Colors.white),
-        ),
-        InputText(
-          controller: emailController,
-          hint: 'your@email.com',
-          label: 'Email',
-          validator: (email) => validateEmail(email),
-          error: emailValidationResult,
-        ),
-        SizedBox(height: 10,),
-        InputText(
-          controller: passwordController,
-          hint: 'Ic3 Cre4m L0ck',
-          label: 'Password',
-          password: true,
-        ),
-        InputButton(
-          "Sign In",
-          enableSignIn()
-        ),
-        InputButton(
-          "Back",
-          back
-        )
-      ],
-    );
+              color: Colors.red),
+        ));
+    }
+    return Column(mainAxisSize: MainAxisSize.min, children: formChildren);
   }
 
   Widget buildRegisterForm() {
-    return  Column(
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        Icon(
+    List<Widget> formChildren = [
+      Icon(
           IconData(0xe547, fontFamily: 'MaterialIcons'),
           size: 50,
           color: Colors.white,
@@ -198,13 +220,17 @@ class RegisterState extends State<Register> {
           hint: 'Alex',
           label: 'First Name',
         ),
-        SizedBox(height: 10,),
+        SizedBox(
+          height: 10,
+        ),
         InputText(
           controller: lastNameController,
           hint: 'Smith',
           label: 'Last Name',
         ),
-        SizedBox(height: 10,),
+        SizedBox(
+          height: 10,
+        ),
         InputText(
           controller: emailController,
           hint: 'your@email.com',
@@ -212,28 +238,47 @@ class RegisterState extends State<Register> {
           validator: (email) => validateEmail(email),
           error: emailValidationResult,
         ),
-        SizedBox(height: 10,),
+        SizedBox(
+          height: 10,
+        ),
         InputText(
           controller: passwordController,
           hint: 'Ic3 Cre4m L0ck',
           label: 'Password',
           password: true,
         ),
-        SizedBox(height: 10,),
+        SizedBox(
+          height: 10,
+        ),
         InputText(
           controller: confirmPasswordController,
           label: 'Confirm Password',
           password: true,
-        ),
-        InputButton(
-          "Sign Up",
-          enableSignUp()
-        ),
-        InputButton(
-          "Back",
-          back
         )
-      ],
+    ];
+
+    if (registering) {
+      formChildren.add(SizedBox(
+        height: 10,
+      ));
+      formChildren.add(CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white)));
+    } else {
+      formChildren.add(InputButton("Sign Up", enableSignUp()));
+      formChildren.add(InputButton("Back", back));
+    }
+    if (errorMessage.isNotEmpty) {
+      formChildren.insert(0, Text(
+          errorMessage,
+          style: TextStyle(
+              fontSize: 30,
+              fontFamily: 'Helvetica',
+              fontWeight: FontWeight.bold,
+              color: Colors.red),
+        ));
+    }
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: formChildren
     );
   }
 
@@ -248,22 +293,27 @@ class RegisterState extends State<Register> {
       child = buildRegisterForm();
     }
 
-    return (Scaffold(body: Container(
-        height: double.infinity,
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: Colors.blue,
-          image: DecorationImage(
-            image: AssetImage('assets/food.jpg'),
-            fit: BoxFit.cover,
-            colorFilter: new ColorFilter.mode(
-                Colors.black.withOpacity(.5), BlendMode.dstATop),
-          ),
-        ),
-        child: Padding(padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom), child:Center(
-            child: SingleChildScrollView(child: Container(
-                width: MediaQuery.of(context).size.width * .7,
-                child: child)))))));
+    return (Scaffold(
+        body: Container(
+            height: double.infinity,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.blue,
+              image: DecorationImage(
+                image: AssetImage('assets/food.jpg'),
+                fit: BoxFit.cover,
+                colorFilter: new ColorFilter.mode(
+                    Colors.black.withOpacity(.5), BlendMode.dstATop),
+              ),
+            ),
+            child: Padding(
+                padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).viewInsets.bottom),
+                child: Center(
+                    child: SingleChildScrollView(
+                        child: Container(
+                            width: MediaQuery.of(context).size.width * .7,
+                            child: child)))))));
   }
 
   @override
