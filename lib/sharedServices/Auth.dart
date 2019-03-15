@@ -91,7 +91,7 @@ class AuthContainerState extends State<AuthContainer> {
       }
     } catch(e) {
       print(e);
-      return 'error';
+      return 'Unexpected Error';
     }
   }
 
