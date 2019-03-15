@@ -27,7 +27,11 @@ class InputTextState extends State<InputText> {
     return TextField(
         obscureText: this.widget.password != null ? this.widget.password : false,
         controller: this.widget.controller,
-        onChanged: (email) => this.widget.validator(email),
+        onChanged: (email) {
+          if (this.widget.validator != null) {
+            this.widget.validator(email);
+          }
+        },
         decoration: InputDecoration(
           labelText: this.widget.label,
           hintText: this.widget.hint,
