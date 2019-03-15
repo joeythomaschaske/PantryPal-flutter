@@ -20,9 +20,9 @@ class ApiGateway {
     if (response.statusCode == 200) {
       return 'ok';
     } else if (response.statusCode == 403) {
-      return 'duplicate';
+      return 'An account already exists for this email.\nDid you mean to sign in?';
     } else {
-      return 'error';
+      return 'Unexpected Error';
     }
   }
 

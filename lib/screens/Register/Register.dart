@@ -26,31 +26,55 @@ class RegisterState extends State<Register> {
   bool registering = false;
 
   signIn() async {
+    if (emailController.text == null ||
+        emailController.text.isEmpty ||
+        passwordController.text == null ||
+        passwordController.text.isEmpty) {
+      setState(() {
+        errorMessage = 'Complete fields';
+      });
+      return;
+    }
     setState(() {
       registering = true;
+      errorMessage = null;
     });
     AuthContainerState auth = AuthContainer.of(context);
     String res = await auth.login(
         emailController.text, passwordController.text, context);
     if (res != 'ok') {
       setState(() {
-      registering = false;
-    });
+        registering = false;
+        errorMessage = res;
+      });
     } else {
       Navigator.of(context).pushNamedAndRemoveUntil(
           Constants.HOME, (Route<dynamic> route) => false);
     }
   }
 
-  Function enableSignIn() {
-    String email = emailController.text;
-    String password = emailController.text;
-    return email.isNotEmpty && password.isNotEmpty ? signIn : null;
-  }
-
   signUp() async {
+    String firstName = firstNameController.text;
+    String lastName = lastNameController.text;
+    String email = emailController.text;
+    String password = passwordController.text;
+    String confirmPassword = confirmPasswordController.text;
+
+    bool formComplete = firstName.isNotEmpty &&
+        lastName.isNotEmpty &&
+        email.isNotEmpty &&
+        password.isNotEmpty &&
+        confirmPassword.isNotEmpty &&
+        password == confirmPassword;
+    if (!formComplete) {
+      setState(() {
+        errorMessage = 'Complete fields';
+      });
+      return;
+    }
     setState(() {
       registering = true;
+      errorMessage = null;
     });
     AuthContainerState data = AuthContainer.of(context);
     String res = await data.register(firstNameController.text,
@@ -60,26 +84,10 @@ class RegisterState extends State<Register> {
           Constants.HOME, (Route<dynamic> route) => false);
     } else {
       setState(() {
-      registering = true;
-    });
+        registering = false;
+        errorMessage = res;
+      });
     }
-  }
-
-  Function enableSignUp() {
-    String firstName = firstNameController.text;
-    String lastName = lastNameController.text;
-    String email = emailController.text;
-    String password = passwordController.text;
-    String confirmPassword = confirmPasswordController.text;
-
-    return firstName.isNotEmpty &&
-            lastName.isNotEmpty &&
-            email.isNotEmpty &&
-            password.isNotEmpty &&
-            confirmPassword.isNotEmpty &&
-            password == confirmPassword
-        ? signUp
-        : null;
   }
 
   showLogInForm() {
@@ -103,6 +111,7 @@ class RegisterState extends State<Register> {
       showMenu = true;
       showLogin = false;
       showRegister = false;
+      errorMessage = null;
     });
   }
 
@@ -182,20 +191,23 @@ class RegisterState extends State<Register> {
       formChildren.add(SizedBox(
         height: 10,
       ));
-      formChildren.add(CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white)));
+      formChildren.add(CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(Colors.white)));
     } else {
-      formChildren.add(InputButton("Sign In", enableSignIn()));
+      formChildren.add(InputButton("Sign In", signIn));
       formChildren.add(InputButton("Back", back));
     }
-    if (errorMessage.isNotEmpty) {
-      formChildren.insert(0, Text(
-          errorMessage,
-          style: TextStyle(
-              fontSize: 30,
-              fontFamily: 'Helvetica',
-              fontWeight: FontWeight.bold,
-              color: Colors.red),
-        ));
+    if (errorMessage != null) {
+      formChildren.insert(
+          0,
+          Text(
+            errorMessage,
+            style: TextStyle(
+                fontSize: 15,
+                fontFamily: 'Helvetica',
+                fontWeight: FontWeight.bold,
+                color: Colors.red),
+          ));
     }
     return Column(mainAxisSize: MainAxisSize.min, children: formChildren);
   }
@@ -203,83 +215,83 @@ class RegisterState extends State<Register> {
   Widget buildRegisterForm() {
     List<Widget> formChildren = [
       Icon(
-          IconData(0xe547, fontFamily: 'MaterialIcons'),
-          size: 50,
-          color: Colors.white,
-        ),
-        Text(
-          "Pantry Pal",
-          style: TextStyle(
-              fontSize: 30,
-              fontFamily: 'Helvetica',
-              fontWeight: FontWeight.bold,
-              color: Colors.white),
-        ),
-        InputText(
-          controller: firstNameController,
-          hint: 'Alex',
-          label: 'First Name',
-        ),
-        SizedBox(
-          height: 10,
-        ),
-        InputText(
-          controller: lastNameController,
-          hint: 'Smith',
-          label: 'Last Name',
-        ),
-        SizedBox(
-          height: 10,
-        ),
-        InputText(
-          controller: emailController,
-          hint: 'your@email.com',
-          label: 'Email',
-          validator: (email) => validateEmail(email),
-          error: emailValidationResult,
-        ),
-        SizedBox(
-          height: 10,
-        ),
-        InputText(
-          controller: passwordController,
-          hint: 'Ic3 Cre4m L0ck',
-          label: 'Password',
-          password: true,
-        ),
-        SizedBox(
-          height: 10,
-        ),
-        InputText(
-          controller: confirmPasswordController,
-          label: 'Confirm Password',
-          password: true,
-        )
+        IconData(0xe547, fontFamily: 'MaterialIcons'),
+        size: 50,
+        color: Colors.white,
+      ),
+      Text(
+        "Pantry Pal",
+        style: TextStyle(
+            fontSize: 30,
+            fontFamily: 'Helvetica',
+            fontWeight: FontWeight.bold,
+            color: Colors.white),
+      ),
+      InputText(
+        controller: firstNameController,
+        hint: 'Alex',
+        label: 'First Name',
+      ),
+      SizedBox(
+        height: 10,
+      ),
+      InputText(
+        controller: lastNameController,
+        hint: 'Smith',
+        label: 'Last Name',
+      ),
+      SizedBox(
+        height: 10,
+      ),
+      InputText(
+        controller: emailController,
+        hint: 'your@email.com',
+        label: 'Email',
+        validator: (email) => validateEmail(email),
+        error: emailValidationResult,
+      ),
+      SizedBox(
+        height: 10,
+      ),
+      InputText(
+        controller: passwordController,
+        hint: 'Ic3 Cre4m L0ck',
+        label: 'Password',
+        password: true,
+      ),
+      SizedBox(
+        height: 10,
+      ),
+      InputText(
+        controller: confirmPasswordController,
+        label: 'Confirm Password',
+        password: true,
+      )
     ];
 
     if (registering) {
       formChildren.add(SizedBox(
         height: 10,
       ));
-      formChildren.add(CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white)));
+      formChildren.add(CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(Colors.white)));
     } else {
-      formChildren.add(InputButton("Sign Up", enableSignUp()));
+      formChildren.add(InputButton("Sign Up", signUp));
       formChildren.add(InputButton("Back", back));
     }
-    if (errorMessage.isNotEmpty) {
-      formChildren.insert(0, Text(
-          errorMessage,
-          style: TextStyle(
-              fontSize: 30,
-              fontFamily: 'Helvetica',
-              fontWeight: FontWeight.bold,
-              color: Colors.red),
-        ));
+    if (errorMessage != null) {
+      formChildren.insert(
+          0,
+          Text(
+            errorMessage,
+            style: TextStyle(
+                fontSize: 15,
+                fontFamily: 'Helvetica',
+                fontWeight: FontWeight.bold,
+                color: Colors.red),
+          ));
     }
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: formChildren
-    );
+    return Column(mainAxisSize: MainAxisSize.min, children: formChildren);
   }
 
   @override
