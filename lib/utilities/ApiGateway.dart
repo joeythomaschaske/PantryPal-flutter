@@ -39,6 +39,16 @@ class ApiGateway {
     return json.decode(response.body);
   }
 
+  static Future<Map<String, dynamic>> refreshOutsideApp(String email, String baseUrl, String refreshToken) async {
+    final response = await http.post(baseUrl + '/refresh',
+      body : json.encode({
+        'email' : email,
+        'refreshToken' : refreshToken
+      })
+    );
+    return json.decode(response.body);
+  }
+
   static Future<bool> refresh(BuildContext context) async {
     EnvironmentContainerState environment = EnvironmentContainer.of(context);
     AuthContainerState auth = AuthContainer.of(context);

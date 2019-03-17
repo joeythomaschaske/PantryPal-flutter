@@ -6,6 +6,7 @@ class JWT {
   }
 
   static bool isActive(String token) {
+    if (token == null) return false;
     Map<String, dynamic> claims = decode(token);
     double now = DateTime.now().toUtc().millisecondsSinceEpoch / 1000;
     int expiration = claims['exp'];
