@@ -28,7 +28,7 @@ void main() async {
       results[4] != null &&
       results[5] != null &&
       results[6] != null) {
-    u = new User(results[3], results[4], results[5], results[0], results[1], results[2], results[6]);
+    u = new User(results[3], results[4], results[5]);
     bool idTokenActive = JWT.isActive(results[0]);
     bool refreshTokenActive = JWT.refreshTokenActive(results[6]);
     if (!idTokenActive && !refreshTokenActive) {
@@ -38,10 +38,6 @@ void main() async {
       if (newTokens['error'] != null) {
         await storage.deleteAll();
       } else {
-        u.identityToken = newTokens['idToken'];
-        u.accessToken =newTokens['accessToken'];
-        u.refreshToken = newTokens['refreshToken'];
-        u.refreshTokenExpiration = newTokens['refreshTokenExpiration'];
         await storage.write(key: 'idToken', value: newTokens['idToken']);
         await storage.write(key: 'accessToken', value: newTokens['accessToken']);
         await storage.write(key: 'refreshToken', value: newTokens['refreshToken']);

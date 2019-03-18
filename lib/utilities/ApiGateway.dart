@@ -4,6 +4,7 @@ import '../sharedServices/Environment.dart';
 import '../sharedServices/Auth.dart';
 import './JWT.dart';
 import 'dart:convert';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ApiGateway {
   static Future<String> signUp(String firstName, String lastName, String email, String password, BuildContext context) async {
@@ -49,43 +50,55 @@ class ApiGateway {
     return json.decode(response.body);
   }
 
-  static Future<bool> refresh(BuildContext context) async {
+  static Future<Map<String, dynamic>> refresh(BuildContext context) async {
     EnvironmentContainerState environment = EnvironmentContainer.of(context);
     AuthContainerState auth = AuthContainer.of(context);
+    FlutterSecureStorage storage = new FlutterSecureStorage();
+    String refreshToken = await storage.read(key: 'refreshToken');
+
     final response = await http.post(environment.baseUrl + '/refresh',
       body : json.encode({
         'email' :auth.user.email,
-        'refreshToken' : auth.user.refreshToken
+        'refreshToken' : refreshToken
       })
     );
     
     Map<String, dynamic> body = json.decode(response.body);
-    if (body.containsKey('error')) {
-      return false;
-    }
 
-    String refreshToken = body['refreshToken'];
+    refreshToken = body['refreshToken'];
     String accessToken = body['accessToken'];
     String identityToken = body['identityToken'];
-    auth.updateUserTokens(identityToken: identityToken, accessToken: accessToken, refreshToken: refreshToken);
-    return true;
+    String refreshTokenExpiration = body['refreshTokenExpiration'].toString();
+
+    await storage.write(key: refreshToken, value: refreshToken);
+    await storage.write(key: accessToken, value: accessToken);
+    await storage.write(key: identityToken, value: identityToken);
+    await storage.write(key: refreshTokenExpiration, value: refreshTokenExpiration);
+
+    return body;
   }
 
   static Future<bool> signOut(BuildContext context) async {
     EnvironmentContainerState environment = EnvironmentContainer.of(context);
-    AuthContainerState auth = AuthContainer.of(context);
+    FlutterSecureStorage storage = new FlutterSecureStorage();
+    String refreshToken = await storage.read(key: 'refreshToken');
+    String identityToken = await storage.read(key: 'identityToken');
+    String accessToken = await storage.read(key: 'accessToken');
 
-    if (!JWT.isActive(auth.user.identityToken)) {
-      await ApiGateway.refresh(context);
+    if (!JWT.isActive(identityToken)) {
+      Map<String, dynamic> newTokens = await ApiGateway.refresh(context);
+      refreshToken = newTokens['refreshToken'];
+      identityToken = newTokens['identityToken'];
+      accessToken = newTokens['accessToken'];
     }
     final response = await http.post(environment.baseUrl + '/signOut',
       headers: {
-        'Authorization' : 'Bearer ' + auth.user.identityToken
+        'Authorization' : 'Bearer ' + identityToken
       },
       body : json.encode({
-        'idToken' :auth.user.identityToken,
-        'accessToken' :auth.user.accessToken,
-        'refreshToken' : auth.user.refreshToken
+        'idToken' : identityToken,
+        'accessToken' :accessToken,
+        'refreshToken' : refreshToken
       })
     );
     

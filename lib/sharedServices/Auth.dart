@@ -43,8 +43,11 @@ class AuthContainerState extends State<AuthContainer> {
     this.user
   });
 
-  bool isAuthenticated() {
-    return user != null && (JWT.isActive(user.identityToken) || JWT.refreshTokenActive(user.refreshTokenExpiration));
+  Future<bool> isAuthenticated() async {
+    FlutterSecureStorage storage = new FlutterSecureStorage();
+    String identityToken = await storage.read(key: 'idToken');
+    String refreshTokenExpiration = await storage.read(key: 'refreshTokenExpiration');
+    return user != null && (JWT.isActive(identityToken) || JWT.refreshTokenActive(refreshTokenExpiration));
   }
 
   Future<String> register(String firstName, String lastName, String email, String password) {
@@ -88,20 +91,6 @@ class AuthContainerState extends State<AuthContainer> {
     return res;
   }
 
-  Future<void> updateUserTokens({identityToken, accessToken, refreshToken, refreshTokenExpiration}) async {
-    final storage = new FlutterSecureStorage();
-    await storage.write(key: 'idToken', value: identityToken);
-    await storage.write(key: 'accessToken', value: accessToken);
-    await storage.write(key: 'refreshToken', value: refreshToken);
-    await storage.write(key: 'refreshTokenExpiration', value: refreshTokenExpiration.toString());
-    setState(() {
-      user.identityToken = identityToken;
-      user.accessToken = accessToken;
-      user.refreshToken = refreshToken;
-      user.refreshTokenExpiration = refreshTokenExpiration;
-    });
-  }
-
   Future <void> updateUserInfo({firstName, lastName, email, identityToken, accessToken, refreshToken, refreshTokenExpiration}) async {
     final storage = new FlutterSecureStorage();
     await storage.write(key: 'idToken', value: identityToken);
@@ -116,14 +105,10 @@ class AuthContainerState extends State<AuthContainer> {
         user.firstName = firstName;
         user.lastName = lastName;
         user.email = email;
-        user.identityToken = identityToken;
-        user.accessToken =accessToken;
-        user.refreshToken =refreshToken;
-        user.refreshTokenExpiration =refreshTokenExpiration;
       });
     } else {
       setState(() {
-        user = new User(firstName, lastName, email, identityToken, accessToken, refreshToken, refreshTokenExpiration);
+        user = new User(firstName, lastName, email);
       });
     }
   }

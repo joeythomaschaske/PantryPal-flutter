@@ -19,16 +19,7 @@ class Home extends StatelessWidget {
               ),
               Text(
                 a.user.email
-              ),
-              Text(
-                a.user.identityToken
-              ),
-              Text(
-                a.user.accessToken
-              ),
-              Text(
-                a.user.refreshToken
-              ),
+              )
             ];
     } else {
       children = <Widget>[Container()];
