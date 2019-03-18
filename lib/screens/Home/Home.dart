@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../contstants.dart' as Constants;
 import '../../sharedServices/Auth.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class Home extends StatelessWidget {
   Home() : super();
@@ -32,11 +33,11 @@ class Home extends StatelessWidget {
           )
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            a.logout(context)
-            .then((res) {
-              Navigator.of(context).pushNamedAndRemoveUntil(Constants.REGISTER, (Route<dynamic> route) => false);
-            });
+          onPressed: () async {
+            FlutterSecureStorage storage = new FlutterSecureStorage();
+              String identityToken = await storage.read(key: 'idToken');
+              String refreshTokenExpiration = await storage.read(key: 'refreshTokenExpiration');
+              Navigator.of(context).pushNamedAndRemoveUntil(Constants.REGISTER, (Route<dynamic> route) => false, arguments: {'identityToken':identityToken, 'refreshTokenExpiration':refreshTokenExpiration});
           }
         )
       )

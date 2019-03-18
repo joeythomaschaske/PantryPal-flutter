@@ -35,30 +35,28 @@ void main() async {
     if (!idTokenActive && !refreshTokenActive) {
       await storage.deleteAll();
     } else if (!idTokenActive && refreshTokenActive) {
-      Map<String, dynamic> newTokens = await ApiGateway.refreshOutsideApp(results[5], DEV_API_BASE_URL, results[2]);
+      Map<String, dynamic> newTokens = await ApiGateway.refreshOutsideApp(
+          results[5], DEV_API_BASE_URL, results[2]);
       if (newTokens['error'] != null) {
         await storage.deleteAll();
       } else {
         authenticated = true;
         await storage.write(key: 'idToken', value: newTokens['idToken']);
-        await storage.write(key: 'accessToken', value: newTokens['accessToken']);
-        await storage.write(key: 'refreshToken', value: newTokens['refreshToken']);
-        await storage.write(key: 'refreshTokenExpiration', value: newTokens['refreshTokenExpiration'].toString());
+        await storage.write(
+            key: 'accessToken', value: newTokens['accessToken']);
+        await storage.write(
+            key: 'refreshToken', value: newTokens['refreshToken']);
+        await storage.write(
+            key: 'refreshTokenExpiration',
+            value: newTokens['refreshTokenExpiration'].toString());
       }
     } else {
       authenticated = true;
     }
   }
 
-  return runApp(
-    EnvironmentContainer(
-      baseUrl: DEV_API_BASE_URL, 
-    child: AuthContainer(
-        user: u,
-        child: Root(
-          authenticated:authenticated
-        )
-      )
-    )
-  );
+  return runApp(EnvironmentContainer(
+      baseUrl: DEV_API_BASE_URL,
+      child:
+          AuthContainer(user: u, child: Root(authenticated: authenticated))));
 }
