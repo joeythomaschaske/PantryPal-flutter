@@ -82,7 +82,7 @@ class ApiGateway {
     EnvironmentContainerState environment = EnvironmentContainer.of(context);
     FlutterSecureStorage storage = new FlutterSecureStorage();
     String refreshToken = await storage.read(key: 'refreshToken');
-    String identityToken = await storage.read(key: 'identityToken');
+    String identityToken = await storage.read(key: 'idToken');
     String accessToken = await storage.read(key: 'accessToken');
 
     if (!JWT.isActive(identityToken)) {

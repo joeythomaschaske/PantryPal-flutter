@@ -29,9 +29,7 @@ class RootState extends State<Root> {
       Map<String, dynamic> sessionTokens =
           routeSettings.arguments != null ? routeSettings.arguments : null;
       WidgetBuilder screen;
-      if ((widget.authenticated && sessionTokens == null) ||
-          JWT.isActive(sessionTokens['identityToken']) ||
-          JWT.refreshTokenActive(sessionTokens['refreshTokenExpiration'])) {
+      if ((widget.authenticated && sessionTokens == null) || ( sessionTokens != null && (JWT.isActive(sessionTokens['identityToken']) || JWT.refreshTokenActive(sessionTokens['refreshTokenExpiration'])))) {
         screen = (context) => SafeArea(
             child: Material(
                 type: MaterialType.transparency,

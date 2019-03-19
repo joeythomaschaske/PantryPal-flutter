@@ -84,9 +84,6 @@ class AuthContainerState extends State<AuthContainer> {
     if (res) {
       final storage = new FlutterSecureStorage();
       await storage.deleteAll();
-      setState(() {
-        user = null;
-      });
     }
     return res;
   }
