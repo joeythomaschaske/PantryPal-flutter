@@ -3,6 +3,7 @@ import '../../contstants.dart' as Constants;
 import '../../sharedServices/Auth.dart';
 import '../../widgets/InputText.dart';
 import '../../widgets/InputButton.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class Register extends StatefulWidget {
   Register() : super();
@@ -48,8 +49,12 @@ class RegisterState extends State<Register> {
         errorMessage = res;
       });
     } else {
+      FlutterSecureStorage storage = new FlutterSecureStorage();
+
+      String identityToken = await storage.read(key: 'idToken');
+      String refreshTokenExpiration = await storage.read(key: 'refreshTokenExpiration');
       Navigator.of(context).pushNamedAndRemoveUntil(
-          Constants.HOME, (Route<dynamic> route) => false);
+          Constants.HOME, (Route<dynamic> route) => false, arguments: {'identityToken': identityToken, 'refreshTokenExpiration' :refreshTokenExpiration});
     }
   }
 

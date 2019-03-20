@@ -4,11 +4,6 @@ import '../Register/Register.dart';
 import '../../contstants.dart' as Constants;
 import '../../utilities/JWT.dart';
 
-// good example
-//https://github.com/flutter/flutter/issues/19194
-//make an auth route that returns a loading screen
-//if authenticated navigate to home
-//otherwise navigate to login
 class Root extends StatefulWidget {
   final bool authenticated;
 
@@ -25,7 +20,9 @@ class RootState extends State<Root> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(onGenerateRoute: (routeSettings) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      onGenerateRoute: (routeSettings) {
       Map<String, dynamic> sessionTokens =
           routeSettings.arguments != null ? routeSettings.arguments : null;
       WidgetBuilder screen;
