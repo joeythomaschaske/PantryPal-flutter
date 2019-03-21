@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../sharedServices/Auth.dart';
+import '../../widgets/MenuCard.dart';
 
 class Home extends StatelessWidget {
   Home() : super();
@@ -23,64 +24,68 @@ class Home extends StatelessWidget {
       body: Container(
         height: deviceHeight,
         width: deviceWidth,
-        padding: EdgeInsets.only(left: 10, right: 10),
+        padding: EdgeInsets.only(top:deviceHeight * .05, bottom:deviceHeight * .05, left: 10, right: 10),
         decoration: BoxDecoration(
             color: Colors.black,
             image: DecorationImage(
-                image: AssetImage('assets/spices-black.jpg'),
+                image: AssetImage('assets/spices.jpg'),
                 fit: BoxFit.cover,
                 colorFilter: new ColorFilter.mode(
-                    Colors.transparent.withOpacity(.4), BlendMode.dstATop))),
-        child: IntrinsicHeight(
-            child: Column(
+                    Colors.transparent.withOpacity(.8), BlendMode.dstATop))),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            SizedBox(
-              height: .05 * deviceHeight,
+            Expanded(
+              child: Text("Pantry Pal",
+                style: TextStyle(
+                fontSize: 50,
+                color: Colors.white,
+                fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              )
             ),
-            Row(
-              children: <Widget>[
-                Expanded(
-                    child: Text(
-                  "What's for " + menuOption + " " + auth.user.firstName + "?",
-                  style: TextStyle(
-                      fontSize: 30,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.center,
-                ))
-              ],
-            ),
-            IntrinsicHeight(
-                child:
-                    Column(mainAxisAlignment: MainAxisAlignment.end, children: <
-                        Widget>[
-              Row(
+            Container(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
-                  Expanded(
-                      child: Card(
-                          child:
-                              Container(height: 100, child: Text("Option 1")))),
-                  Expanded(
-                      child: Card(
-                          child:
-                              Container(height: 100, child: Text("Option 1")))),
+                  Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Text("What's for " + menuOption + " " + auth.user.firstName + "?",
+                          style: TextStyle(
+                          fontSize: 30,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold),
+                          textAlign: TextAlign.center,
+                        )
+                      )
+                    ],
+                  ),
+                  Row(
+                    children: <Widget>[
+                     Expanded(
+                       child: MenuCard('Add Ingredients', Icons.shopping_basket) ,
+                      ),
+                      Expanded(
+                       child: MenuCard('Recipes', Icons.fastfood) ,
+                      )
+                    ],
+                  ),
+                  Row(
+                    children: <Widget>[
+                     Expanded(
+                       child: MenuCard('Ingredients', Icons.spa) ,
+                      ),
+                      Expanded(
+                       child: MenuCard('Account', Icons.person) ,
+                      )
+                    ],
+                  )
                 ],
               ),
-              Row(
-                children: <Widget>[
-                  Expanded(
-                      child: Card(
-                          child:
-                              Container(height: 100, child: Text("Option 1")))),
-                  Expanded(
-                      child: Card(
-                          child:
-                              Container(height: 100, child: Text("Option 1")))),
-                ],
-              )
-            ]))
+            )
           ],
-        )),
+        )
       ),
     );
   }
