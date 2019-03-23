@@ -28,11 +28,13 @@ class RootState extends State<Root> {
       WidgetBuilder screen;
       if ((widget.authenticated && sessionTokens == null) || ( sessionTokens != null && (JWT.isActive(sessionTokens['identityToken']) || JWT.refreshTokenActive(sessionTokens['refreshTokenExpiration'])))) {
         screen = (context) => SafeArea(
+            bottom: false,
             child: Material(
                 type: MaterialType.transparency,
                 child: routeTable[routeSettings.name]));
       } else {
         screen = (conext) => SafeArea(
+            bottom: false,
             child:
                 Material(type: MaterialType.transparency, child: Register()));
       }

@@ -1,0 +1,4 @@
+#Fri Mar 22 22:33:22 CDT 2019
+base.0=/Users/joseph/PantryPal/app/build/app/intermediates/transforms/dexMerger/debug/0
+path.0=classes.dex
+renamed.0=classes.dex

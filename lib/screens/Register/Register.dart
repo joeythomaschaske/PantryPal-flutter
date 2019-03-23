@@ -296,7 +296,7 @@ class RegisterState extends State<Register> {
                 color: Colors.red),
           ));
     }
-    return Column(mainAxisSize: MainAxisSize.min, children: formChildren);
+    return Column(children: formChildren);
   }
 
   @override
@@ -310,27 +310,33 @@ class RegisterState extends State<Register> {
       child = buildRegisterForm();
     }
 
-    return (Scaffold(
-        body: Container(
-            height: double.infinity,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: Colors.blue,
-              image: DecorationImage(
-                image: AssetImage('assets/food.jpg'),
-                fit: BoxFit.cover,
-                colorFilter: new ColorFilter.mode(
-                    Colors.black.withOpacity(.5), BlendMode.dstATop),
-              ),
-            ),
-            child: Padding(
-                padding: EdgeInsets.only(
-                    bottom: MediaQuery.of(context).viewInsets.bottom),
-                child: Center(
-                    child: SingleChildScrollView(
-                        child: Container(
-                            width: MediaQuery.of(context).size.width * .7,
-                            child: child)))))));
+    return (
+      Container(
+        decoration: BoxDecoration(
+          color: Colors.blue,
+          image: DecorationImage(
+            image: AssetImage('assets/food.jpg'),
+            fit: BoxFit.cover,
+            colorFilter: new ColorFilter.mode(Colors.black.withOpacity(.5), BlendMode.dstATop),
+          ),
+        ),
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          body: Container(
+            alignment: Alignment.center,
+            child: ListView(
+              shrinkWrap: true,
+              children: <Widget>[Container(
+                child: Padding(
+                  padding: EdgeInsets.only(left:MediaQuery.of(context).size.width * .1, right:MediaQuery.of(context).size.width * .1),
+                  child: child
+                ),
+              )
+              ])
+          )
+        )
+      )
+    );
   }
 
   @override
