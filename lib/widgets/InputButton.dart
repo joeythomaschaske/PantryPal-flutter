@@ -9,10 +9,11 @@ class InputButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return OutlineButton(
+        borderSide: BorderSide(color: Colors.white, width: 2),
             onPressed: onPress,
             child: SizedBox(width: double.infinity, child: Center(child:Text(
               text,
-              style: TextStyle(fontSize: 20, color: Colors.white),
+              style: TextStyle(fontSize: 25, color: Colors.white),
             ))),
             shape: new RoundedRectangleBorder(
                 borderRadius: new BorderRadius.circular(30.0)));

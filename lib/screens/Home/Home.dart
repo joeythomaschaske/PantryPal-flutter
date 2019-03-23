@@ -1,34 +1,92 @@
 import 'package:flutter/material.dart';
-import '../../contstants.dart' as Constants;
 import '../../sharedServices/Auth.dart';
+import '../../widgets/MenuCard.dart';
 
 class Home extends StatelessWidget {
   Home() : super();
 
-  Future<void> logout(BuildContext context) async  {
-    AuthContainerState data = AuthContainer.of(context);
-    await data.logout(context);
-    Navigator.of(context).pushNamedAndRemoveUntil(Constants.REGISTER, (Route<dynamic> route) => false);
-  }
-
   @override
   Widget build(BuildContext context) {
-    AuthContainerState a = AuthContainer.of(context);
-    List<Widget> children;
-    if (a.user != null) {
-      children = <Widget>[
-        Text(a.user.firstName),
-        Text(a.user.lastName),
-        Text(a.user.email)
-      ];
+    AuthContainerState auth = AuthContainer.of(context);
+    TimeOfDay now = TimeOfDay.now();
+    String menuOption;
+    if (now.hour >= 3 && now.hour < 11) {
+      menuOption = 'breakfast';
+    } else if (now.hour >= 11 && now.hour < 15) {
+      menuOption = 'lunch';
     } else {
-      children = <Widget>[Container()];
+      menuOption = 'dinner';
     }
-    return (Scaffold(
-        body: Center(
-            child: ListView(
-          children: children,
-        )),
-        floatingActionButton: FloatingActionButton(onPressed: () => logout(context))));
+    double deviceHeight = MediaQuery.of(context).size.height;
+    double deviceWidth = MediaQuery.of(context).size.width;
+
+    return Scaffold(
+      body: Container(
+        height: deviceHeight,
+        width: deviceWidth,
+        padding: EdgeInsets.only(top:deviceHeight * .05, bottom:deviceHeight * .05, left: 10, right: 10),
+        decoration: BoxDecoration(
+            color: Colors.black,
+            image: DecorationImage(
+                image: AssetImage('assets/spices.jpg'),
+                fit: BoxFit.cover,
+                colorFilter: new ColorFilter.mode(
+                    Colors.transparent.withOpacity(.8), BlendMode.dstATop))),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Expanded(
+              child: Text("Pantry Pal",
+                style: TextStyle(
+                fontSize: 50,
+                color: Colors.white,
+                fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              )
+            ),
+            Container(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Text("What's for " + menuOption + " " + auth.user.firstName + "?",
+                          style: TextStyle(
+                          fontSize: 30,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold),
+                          textAlign: TextAlign.center,
+                        )
+                      )
+                    ],
+                  ),
+                  Row(
+                    children: <Widget>[
+                     Expanded(
+                       child: MenuCard('Add Ingredients', Icons.shopping_basket) ,
+                      ),
+                      Expanded(
+                       child: MenuCard('Recipes', Icons.fastfood) ,
+                      )
+                    ],
+                  ),
+                  Row(
+                    children: <Widget>[
+                     Expanded(
+                       child: MenuCard('Ingredients', Icons.spa) ,
+                      ),
+                      Expanded(
+                       child: MenuCard('Account', Icons.person) ,
+                      )
+                    ],
+                  )
+                ],
+              ),
+            )
+          ],
+        )
+      ),
+    );
   }
 }
