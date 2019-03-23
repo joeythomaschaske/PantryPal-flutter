@@ -37,6 +37,9 @@ class InputTextState extends State<InputText> {
           hintText: this.widget.hint,
           hintStyle: TextStyle(color: Colors.black),
           errorText: this.widget.error,
+          errorStyle: TextStyle(
+            fontSize: 20
+          ),
           border: InputBorder.none,
           fillColor: Colors.white,
           filled: true,
