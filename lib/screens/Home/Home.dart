@@ -1,9 +1,21 @@
 import 'package:flutter/material.dart';
 import '../../sharedServices/Auth.dart';
 import '../../widgets/MenuCard.dart';
+import '../../contstants.dart' as Constants;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class Home extends StatelessWidget {
   Home() : super();
+
+  Future<void> openAccount(BuildContext context) async {
+    FlutterSecureStorage storage = new FlutterSecureStorage();
+    String identityToken = await storage.read(key: 'idToken');
+    String refreshTokenExpiration = await storage.read(key: 'refreshTokenExpiration');
+    Navigator.of(context).pushNamed(Constants.ACCOUNT, arguments: {
+      'identityToken' : identityToken,
+      'refreshTokenExpiration' : refreshTokenExpiration
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +79,7 @@ class Home extends StatelessWidget {
                        child: MenuCard('Add Ingredients', Icons.shopping_basket) ,
                       ),
                       Expanded(
-                       child: MenuCard('Recipes', Icons.fastfood) ,
+                       child: MenuCard('Recipes', Icons.style) ,
                       )
                     ],
                   ),
@@ -77,7 +89,10 @@ class Home extends StatelessWidget {
                        child: MenuCard('Ingredients', Icons.spa) ,
                       ),
                       Expanded(
-                       child: MenuCard('Account', Icons.person) ,
+                       child: GestureDetector(
+                         onTap: () => openAccount(context),
+                         child: MenuCard('Account', Icons.person)
+                        ) ,
                       )
                     ],
                   )
