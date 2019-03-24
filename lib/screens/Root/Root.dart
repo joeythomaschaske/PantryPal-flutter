@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../Home/Home.dart';
 import '../Register/Register.dart';
+import '../Account/Account.dart';
 import '../../contstants.dart' as Constants;
 import '../../utilities/JWT.dart';
 
@@ -15,7 +16,8 @@ class Root extends StatefulWidget {
 class RootState extends State<Root> {
   static Map<String, Widget> routeTable = {
     Constants.REGISTER: Register(),
-    Constants.HOME: Home()
+    Constants.HOME: Home(),
+    Constants.ACCOUNT: Account()
   };
 
   @override

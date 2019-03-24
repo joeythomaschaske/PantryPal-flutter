@@ -101,7 +101,7 @@ class ApiGateway {
         'refreshToken' : refreshToken
       })
     );
-    
+    await storage.deleteAll();
     Map<String, dynamic> body = json.decode(response.body);
     if (body.containsKey('error')) {
       return false;
