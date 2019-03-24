@@ -85,6 +85,8 @@ class RegisterState extends State<Register> {
     String res = await data.register(firstNameController.text,
         lastNameController.text, emailController.text, passwordController.text);
     if (res == 'ok') {
+      FlutterSecureStorage storage = new FlutterSecureStorage();
+      await storage.deleteAll();
       Navigator.of(context).pushNamedAndRemoveUntil(
           Constants.HOME, (Route<dynamic> route) => false);
     } else {
@@ -153,8 +155,8 @@ class RegisterState extends State<Register> {
               fontWeight: FontWeight.bold,
               color: Colors.white),
         ),
-        InputButton("Sign In", showLogInForm),
-        InputButton("Sign Up", showRegisterForm)
+        InputButton("Sign In", showLogInForm, Colors.white),
+        InputButton("Sign Up", showRegisterForm, Colors.white)
       ],
     );
   }
@@ -199,8 +201,8 @@ class RegisterState extends State<Register> {
       formChildren.add(CircularProgressIndicator(
           valueColor: AlwaysStoppedAnimation<Color>(Colors.white)));
     } else {
-      formChildren.add(InputButton("Sign In", signIn));
-      formChildren.add(InputButton("Back", back));
+      formChildren.add(InputButton("Sign In", signIn, Colors.white));
+      formChildren.add(InputButton("Back", back, Colors.white));
     }
     if (errorMessage != null) {
       formChildren.insert(
@@ -281,8 +283,8 @@ class RegisterState extends State<Register> {
       formChildren.add(CircularProgressIndicator(
           valueColor: AlwaysStoppedAnimation<Color>(Colors.white)));
     } else {
-      formChildren.add(InputButton("Sign Up", signUp));
-      formChildren.add(InputButton("Back", back));
+      formChildren.add(InputButton("Sign Up", signUp, Colors.white));
+      formChildren.add(InputButton("Back", back, Colors.white));
     }
     if (errorMessage != null) {
       formChildren.insert(
@@ -313,13 +315,12 @@ class RegisterState extends State<Register> {
     return (
       Container(
         decoration: BoxDecoration(
-          color: Colors.blue,
-          image: DecorationImage(
-            image: AssetImage('assets/food.jpg'),
-            fit: BoxFit.cover,
-            colorFilter: new ColorFilter.mode(Colors.black.withOpacity(.5), BlendMode.dstATop),
-          ),
-        ),
+            color: Colors.black,
+            image: DecorationImage(
+                image: AssetImage('assets/spices.jpg'),
+                fit: BoxFit.cover,
+                colorFilter: new ColorFilter.mode(
+                    Colors.transparent.withOpacity(.8), BlendMode.dstATop))),
         child: Scaffold(
           backgroundColor: Colors.transparent,
           body: Container(
