@@ -17,6 +17,16 @@ class Home extends StatelessWidget {
     });
   }
 
+  Future<void> openAddIngredient(BuildContext context) async {
+    FlutterSecureStorage storage = new FlutterSecureStorage();
+    String identityToken = await storage.read(key: 'idToken');
+    String refreshTokenExpiration = await storage.read(key: 'refreshTokenExpiration');
+    Navigator.of(context).pushNamed(Constants.ADDINGREDIENT, arguments: {
+      'identityToken' : identityToken,
+      'refreshTokenExpiration' : refreshTokenExpiration
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     AuthContainerState auth = AuthContainer.of(context);
@@ -76,10 +86,13 @@ class Home extends StatelessWidget {
                   Row(
                     children: <Widget>[
                      Expanded(
-                       child: MenuCard('Add Ingredients', Icons.shopping_basket) ,
+                       child: GestureDetector(
+                         onTap: () => openAddIngredient(context),
+                         child: MenuCard('Add Ingredients', Icons.shopping_basket)
+                        ) ,
                       ),
                       Expanded(
-                       child: MenuCard('Recipes', Icons.style) ,
+                       child: MenuCard('Recipes', Icons.local_dining) ,
                       )
                     ],
                   ),

@@ -5,14 +5,14 @@ class InputText extends StatefulWidget {
   final String hint;
   final String label;
   final String error;
-  final Function validator;
+  final Function onChange;
   final bool password;
 
   InputText(
       {@required this.controller,
       this.hint,
       this.label,
-      this.validator,
+      this.onChange,
       this.error,
       this.password})
       : super();
@@ -27,9 +27,9 @@ class InputTextState extends State<InputText> {
     return TextField(
         obscureText: this.widget.password != null ? this.widget.password : false,
         controller: this.widget.controller,
-        onChanged: (email) {
-          if (this.widget.validator != null) {
-            this.widget.validator(email);
+        onChanged: (value) {
+          if (this.widget.onChange != null) {
+            this.widget.onChange(value);
           }
         },
         decoration: InputDecoration(

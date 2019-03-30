@@ -180,7 +180,7 @@ class RegisterState extends State<Register> {
         controller: emailController,
         hint: 'your@email.com',
         label: 'Email',
-        validator: (email) => validateEmail(email),
+        onChange: (email) => validateEmail(email),
         error: emailValidationResult,
       ),
       SizedBox(
@@ -254,7 +254,7 @@ class RegisterState extends State<Register> {
         controller: emailController,
         hint: 'your@email.com',
         label: 'Email',
-        validator: (email) => validateEmail(email),
+        onChange: (email) => validateEmail(email),
         error: emailValidationResult,
       ),
       SizedBox(
