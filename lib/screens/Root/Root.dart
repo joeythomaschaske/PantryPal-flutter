@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../Home/Home.dart';
 import '../Register/Register.dart';
 import '../Account/Account.dart';
@@ -24,6 +25,10 @@ class RootState extends State<Root> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+      ]);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       onGenerateRoute: (routeSettings) {
