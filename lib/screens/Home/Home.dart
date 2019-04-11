@@ -88,23 +88,23 @@ class Home extends StatelessWidget {
                      Expanded(
                        child: GestureDetector(
                          onTap: () => openAddIngredient(context),
-                         child: MenuCard('Add Ingredients', Icons.shopping_basket)
+                         child: MenuCard('Add Ingredients', Icons.shopping_basket, Colors.blue)
                         ) ,
                       ),
                       Expanded(
-                       child: MenuCard('Recipes', Icons.local_dining) ,
+                       child: MenuCard('Recipes', Icons.local_dining, Colors.red[900]),
                       )
                     ],
                   ),
                   Row(
                     children: <Widget>[
                      Expanded(
-                       child: MenuCard('Ingredients', Icons.spa) ,
+                       child: MenuCard('Ingredients', Icons.spa, Colors.lightGreen[900]) ,
                       ),
                       Expanded(
                        child: GestureDetector(
                          onTap: () => openAccount(context),
-                         child: MenuCard('Account', Icons.person)
+                         child: MenuCard('Account', Icons.person, Colors.amber)
                         ) ,
                       )
                     ],

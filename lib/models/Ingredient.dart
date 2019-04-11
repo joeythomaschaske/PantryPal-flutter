@@ -5,6 +5,6 @@ class Ingredient {
   Ingredient({this.id, this.name});
 
   Ingredient.fromJson(Map<String, dynamic> json) :
-    id = int.parse(json['id']),
+    id = json['id'],
     name = json['name'];
 }

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../../widgets/TypeAhead.dart';
 import '../../utilities/ApiGateway.dart';
 import '../../models/Ingredient.dart';
+import '../../models/PersonIngredient.dart';
+import '../../widgets/InputButton.dart';
 
 class AddIngredient extends StatefulWidget {
     AddIngredient() : super();
@@ -13,7 +15,7 @@ class AddIngredient extends StatefulWidget {
 class AddIngredientState extends State<AddIngredient> {
   bool loaded = false;
   List<Ingredient> ingredients = List<Ingredient>();
-  Ingredient selectedIngredient;
+  List<Ingredient> selectedIngredients = List<Ingredient>();
   Ingredient otherIngredient;
 
   @override
@@ -21,6 +23,7 @@ class AddIngredientState extends State<AddIngredient> {
     super.didChangeDependencies();
     ApiGateway.getIngredients(context)
     .then((ingredients) {
+      print('loaded');
       Ingredient other = ingredients.where((ingredient) => ingredient.name == 'Other').toList()[0];
       setState(() {
         this.otherIngredient = other;
@@ -31,59 +34,96 @@ class AddIngredientState extends State<AddIngredient> {
   }
 
   void ingredientSelected(Ingredient selectedIngredient) {
+    selectedIngredients.add(selectedIngredient);
     setState(() {
-      this.selectedIngredient = selectedIngredient;
+      this.selectedIngredients = selectedIngredients;
     });
+  }
+
+  void addIngredients() async {
+    List<PersonIngredient> personIngredientsToInsert = List<PersonIngredient>();
+    selectedIngredients.forEach((ingredient) {
+      PersonIngredient personIngredient = PersonIngredient();
+      personIngredient.ingredientId = ingredient.id;
+      personIngredientsToInsert.add(personIngredient);
+    }); 
+
+    List<PersonIngredient> insertedIngredients = await ApiGateway.createUserIngredients(context, personIngredientsToInsert);
+    print('we inserted them');
   }
 
   @override
   Widget build(BuildContext context) {
-    double quarterHeight = MediaQuery.of(context).size.height * .25;
     return Container(
-      color: Colors.lightBlue,
-      child: Stack(
+      padding: EdgeInsets.only(left: 15, right: 15, top: 50, bottom: 50),
+      height: MediaQuery.of(context).size.height,
+       decoration: BoxDecoration(
+            color: Colors.blue,
+            image: DecorationImage(
+                image: AssetImage('assets/spices.jpg'),
+                fit: BoxFit.cover,
+                colorFilter: new ColorFilter.mode(
+                    Colors.black.withOpacity(.2), BlendMode.dstATop))),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          Positioned(
-            top: 0,
-            width: MediaQuery.of(context).size.width,
-            child: Row(
-              children: <Widget>[
-                Expanded(
-                  child: Center(
-                    child: Text('Add Ingredients'),
-                  ),
-                )
-              ],
-            ),
+          Row(
+            children: <Widget>[
+              TypeAhead(
+                hint: 'Search Ingredients',
+                items: ingredients,
+                onClick: ingredientSelected,
+                defaultItem: otherIngredient,
+              )
+            ],
           ),
-          Positioned(
-            top: quarterHeight - 25,
-            left: 0,
-            child: Text('SELECTED INGREDIENT: ' + (selectedIngredient != null ? selectedIngredient.name : 'none'))
-          ),
-          Positioned(
-            width: MediaQuery.of(context).size.width,
-            top: quarterHeight - 75,
-            left: 0,
-            child: Center(
-              
-              child: Container(
-              width: MediaQuery.of(context).size.width * .75,
-              child: Row(
+          Flexible(
+            child:Row(
               children: <Widget>[
-                Expanded(
-                  child: Center(
-                    child: TypeAhead(
-                      hint: 'Ingredient Name',
-                      items: ingredients,
-                      onClick: ingredientSelected,
-                      defaultItem: otherIngredient,
-                    )
+                Flexible(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Text(
+                        'Ingredients Selected',
+                        style: TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          letterSpacing: 1
+                        )
+                      ),
+                      Flexible(child:ListView.builder(
+                        itemCount: selectedIngredients.length,
+                        itemBuilder: (context, index) {
+                          return ListTile(
+                            title: Text(
+                              selectedIngredients[index].name,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20
+                              ),
+                            ),
+                          );
+                        },
+                      ))
+                    ],
                   )
                 )
-              ]
+              ],
             )
-          )))
+          ),
+          Row(
+            children: <Widget>[
+              Flexible(
+                child: InputButton(
+                  'Save Ingredients',
+                  addIngredients,
+                  Colors.white
+                )
+              )
+            ],
+          )
         ],
       )
     );
