@@ -14,26 +14,39 @@ class AddIngredient extends StatefulWidget {
 
 class AddIngredientState extends State<AddIngredient> {
   bool loaded = false;
+  bool saving = false;
   List<Ingredient> ingredients = List<Ingredient>();
   List<Ingredient> selectedIngredients = List<Ingredient>();
   Ingredient otherIngredient;
+  final scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    ApiGateway.getIngredients(context)
-    .then((ingredients) {
-      print('loaded');
-      Ingredient other = ingredients.where((ingredient) => ingredient.name == 'Other').toList()[0];
-      setState(() {
-        this.otherIngredient = other;
-        this.ingredients = ingredients;
-        loaded = true;
+    if (ingredients.length == 0) {
+      ApiGateway.getIngredients(context)
+      .then((ingredients) {
+        print('loaded');
+        Ingredient other = ingredients.where((ingredient) => ingredient.name == 'Other').toList()[0];
+        setState(() {
+          this.otherIngredient = other;
+          this.ingredients = ingredients;
+          loaded = true;
+        });
       });
-    });
+    }
+  }
+
+  Ingredient otherIngredientSearched(Ingredient other, String query) {
+    Ingredient copy = other.copy();
+    copy.name = copy.name + ' - ' + query;
+    return copy;
   }
 
   void ingredientSelected(Ingredient selectedIngredient) {
+    if (selectedIngredient.id == otherIngredient.id) {
+        selectedIngredient.name = selectedIngredient.name.replaceAll('Other -', '').trim();
+      }
     selectedIngredients.add(selectedIngredient);
     setState(() {
       this.selectedIngredients = selectedIngredients;
@@ -41,21 +54,45 @@ class AddIngredientState extends State<AddIngredient> {
   }
 
   void addIngredients() async {
+    setState(() {
+      saving = true;
+    });
     List<PersonIngredient> personIngredientsToInsert = List<PersonIngredient>();
     selectedIngredients.forEach((ingredient) {
       PersonIngredient personIngredient = PersonIngredient();
       personIngredient.ingredientId = ingredient.id;
+      if (ingredient.id == otherIngredient.id) {
+        personIngredient.customIngredient = ingredient.name.replaceAll('Other -', '').trim();
+      }
       personIngredientsToInsert.add(personIngredient);
     }); 
 
-    List<PersonIngredient> insertedIngredients = await ApiGateway.createUserIngredients(context, personIngredientsToInsert);
-    print('we inserted them');
+    await ApiGateway.createUserIngredients(context, personIngredientsToInsert);
+    setState(() {
+      saving = false;
+      selectedIngredients = List<Ingredient>();
+    });
+    scaffoldKey.currentState.showSnackBar(
+      SnackBar(
+        content: Text(
+          'Ingredients added to inventory',
+          style: TextStyle(
+            fontSize: 20
+          ),
+        ),
+      )
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    Widget saveButtonOrSpinner = saving ? 
+      Center(
+        child : CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white))
+      ) :
+      InputButton('Save Ingredients', addIngredients, Colors.white);
     return Container(
-      padding: EdgeInsets.only(left: 15, right: 15, top: 50, bottom: 50),
+      padding: EdgeInsets.only(left: 15, right: 15, top: 50, bottom: 5),
       height: MediaQuery.of(context).size.height,
        decoration: BoxDecoration(
             color: Colors.blue,
@@ -64,7 +101,12 @@ class AddIngredientState extends State<AddIngredient> {
                 fit: BoxFit.cover,
                 colorFilter: new ColorFilter.mode(
                     Colors.black.withOpacity(.2), BlendMode.dstATop))),
-      child: Column(
+      child: Scaffold(
+      backgroundColor: Colors.transparent,
+      key: scaffoldKey,
+      body: Container(
+        padding: EdgeInsets.only(bottom: 50),
+        child:Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           Row(
@@ -74,6 +116,7 @@ class AddIngredientState extends State<AddIngredient> {
                 items: ingredients,
                 onClick: ingredientSelected,
                 defaultItem: otherIngredient,
+                defaultCallback: otherIngredientSearched,
               )
             ],
           ),
@@ -84,24 +127,32 @@ class AddIngredientState extends State<AddIngredient> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
-                      Text(
-                        'Ingredients Selected',
-                        style: TextStyle(
-                          fontSize: 30,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          letterSpacing: 1
-                        )
+                      Padding(
+                        padding: EdgeInsets.all(10),
+                        child: Text(
+                          'Ingredients Selected',
+                          style: TextStyle(
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            letterSpacing: 1
+                          )
+                        ),
                       ),
                       Flexible(child:ListView.builder(
+                        
                         itemCount: selectedIngredients.length,
                         itemBuilder: (context, index) {
-                          return ListTile(
-                            title: Text(
-                              selectedIngredients[index].name,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 20
+                          return Container(
+                            margin: EdgeInsets.only(top: 5),
+                            color: Colors.white,
+                            child: ListTile(
+                              title: Text(
+                                selectedIngredients[index].name,
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 20
+                                ),
                               ),
                             ),
                           );
@@ -116,16 +167,12 @@ class AddIngredientState extends State<AddIngredient> {
           Row(
             children: <Widget>[
               Flexible(
-                child: InputButton(
-                  'Save Ingredients',
-                  addIngredients,
-                  Colors.white
-                )
+                child: saveButtonOrSpinner
               )
             ],
           )
         ],
-      )
+      )))
     );
   }
 }
