@@ -40,6 +40,7 @@ class RegisterState extends State<Register> {
       registering = true;
       errorMessage = null;
     });
+    FocusScope.of(context).requestFocus(new FocusNode());
     AuthContainerState auth = AuthContainer.of(context);
     String res = await auth.login(
         emailController.text, passwordController.text, context);
@@ -81,6 +82,7 @@ class RegisterState extends State<Register> {
       registering = true;
       errorMessage = null;
     });
+    FocusScope.of(context).requestFocus(new FocusNode());
     AuthContainerState data = AuthContainer.of(context);
     String res = await data.register(firstNameController.text,
         lastNameController.text, emailController.text, passwordController.text);
@@ -180,7 +182,7 @@ class RegisterState extends State<Register> {
         controller: emailController,
         hint: 'your@email.com',
         label: 'Email',
-        validator: (email) => validateEmail(email),
+        onChange: (email) => validateEmail(email),
         error: emailValidationResult,
       ),
       SizedBox(
@@ -254,7 +256,7 @@ class RegisterState extends State<Register> {
         controller: emailController,
         hint: 'your@email.com',
         label: 'Email',
-        validator: (email) => validateEmail(email),
+        onChange: (email) => validateEmail(email),
         error: emailValidationResult,
       ),
       SizedBox(
