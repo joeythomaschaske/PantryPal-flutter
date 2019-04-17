@@ -86,7 +86,7 @@ class AddIngredientState extends State<AddIngredient> {
 
   @override
   Widget build(BuildContext context) {
-    Widget saveButtonOrSpinner = saving ? 
+    Widget saveButtonOrSpinner = selectedIngredients.length == 0 ? Container() : saving ? 
       Center(
         child : CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white))
       ) :
@@ -143,7 +143,7 @@ class AddIngredientState extends State<AddIngredient> {
                         itemCount: selectedIngredients.length,
                         itemBuilder: (context, index) {
                           return Dismissible(
-                            key: Key(index.toString()),
+                            key: Key(selectedIngredients[index].name + index.toString()),
                             background: Container(color: Colors.white.withOpacity(.5), margin: EdgeInsets.only(top: 5)),
                             onDismissed: (direction) {
                               setState(() {
