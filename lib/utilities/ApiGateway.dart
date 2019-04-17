@@ -5,6 +5,8 @@ import '../sharedServices/Auth.dart';
 import './JWT.dart';
 import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import '../models/Ingredient.dart';
+import '../models/PersonIngredient.dart';
 
 class ApiGateway {
   static Future<String> signUp(String firstName, String lastName, String email, String password, BuildContext context) async {
@@ -108,4 +110,56 @@ class ApiGateway {
     }
     return true;
   }
+  static Future<List<Ingredient>> getIngredients(BuildContext context) async {
+    EnvironmentContainerState environment = EnvironmentContainer.of(context);
+    FlutterSecureStorage storage = new FlutterSecureStorage();
+    String identityToken = await storage.read(key: 'idToken');
+
+    if (!JWT.isActive(identityToken)) {
+      Map<String, dynamic> newTokens = await ApiGateway.refresh(context);
+      identityToken = newTokens['identityToken'];
+    }
+    final response = await http.get(environment.baseUrl + '/getAllIngredients',
+      headers: {
+        'Authorization' : 'Bearer ' + identityToken
+      },
+    );
+    Map<String, dynamic> result = json.decode(response.body);
+    List rawIngredients = result['ingredients'];
+
+    List<Ingredient> ingredients = rawIngredients.map((ingredient) {
+      return Ingredient.fromJson(ingredient);
+    }).toList();
+    return ingredients;
+  }
+
+  static Future<List<PersonIngredient>> createUserIngredients(BuildContext context, List<PersonIngredient> ingredients) async {
+    EnvironmentContainerState environment = EnvironmentContainer.of(context);
+    FlutterSecureStorage storage = new FlutterSecureStorage();
+    String identityToken = await storage.read(key: 'idToken');
+
+    if (!JWT.isActive(identityToken)) {
+      Map<String, dynamic> newTokens = await ApiGateway.refresh(context);
+      identityToken = newTokens['identityToken'];
+    }
+
+    final response = await http.post(environment.baseUrl + '/createPersonIngredients',
+      headers: {
+        'Authorization' : 'Bearer ' + identityToken
+      },
+      body : json.encode({
+        'ingredients' : ingredients
+      })
+    );
+
+    Map<String, dynamic> result = json.decode(response.body);
+    List rawPersonIngredients = result['ingredients'];
+
+    List<PersonIngredient> personIngredients = rawPersonIngredients.map((ingredient) {
+      return PersonIngredient.fromJson(ingredient);
+    }).toList();
+    return personIngredients;
+
+  }
 }
+

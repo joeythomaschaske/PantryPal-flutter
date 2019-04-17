@@ -25,6 +25,7 @@
         android:name="io.flutter.app.FlutterApplication"
         android:allowBackup="false"
         android:debuggable="true"
+        android:fullBackupContent="false"
         android:icon="@mipmap/ic_launcher"
         android:label="app" >
         <activity

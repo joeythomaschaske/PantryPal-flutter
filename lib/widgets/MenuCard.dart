@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 class MenuCard extends StatelessWidget {
 final String text;
 final IconData icon;
+final Color color;
 
-  MenuCard(this.text, this.icon) :super();
+  MenuCard(this.text, this.icon, this.color) :super();
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +13,7 @@ final IconData icon;
     double cardWidth = (width - 30) / 2;
     return Container(
       margin: EdgeInsets.all(5),
-      color: Colors.blue.withOpacity(.9),
+      color: this.color.withOpacity(.9),
       child: Container(
         height: cardWidth, 
         child: Center(
