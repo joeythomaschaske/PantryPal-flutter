@@ -140,21 +140,29 @@ class AddIngredientState extends State<AddIngredient> {
                         ),
                       ),
                       Flexible(child:ListView.builder(
-                        
                         itemCount: selectedIngredients.length,
                         itemBuilder: (context, index) {
-                          return Container(
-                            margin: EdgeInsets.only(top: 5),
-                            color: Colors.white,
-                            child: ListTile(
-                              title: Text(
-                                selectedIngredients[index].name,
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 20
+                          return Dismissible(
+                            key: Key(index.toString()),
+                            background: Container(color: Colors.white.withOpacity(.5), margin: EdgeInsets.only(top: 5)),
+                            onDismissed: (direction) {
+                              setState(() {
+                                selectedIngredients.removeAt(index);
+                              });
+                            },
+                            child: Container(
+                              margin: EdgeInsets.only(top: 5),
+                              color: Colors.white,
+                              child: ListTile(
+                                title: Text(
+                                  selectedIngredients[index].name,
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 20
+                                  ),
                                 ),
                               ),
-                            ),
+                            )
                           );
                         },
                       ))
