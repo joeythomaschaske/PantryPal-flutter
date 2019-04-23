@@ -90,7 +90,7 @@ class RegisterState extends State<Register> {
       FlutterSecureStorage storage = new FlutterSecureStorage();
       await storage.deleteAll();
       Navigator.of(context).pushNamedAndRemoveUntil(
-          Constants.HOME, (Route<dynamic> route) => false);
+          Constants.REGISTER, (Route<dynamic> route) => false);
     } else {
       setState(() {
         registering = false;

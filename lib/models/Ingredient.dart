@@ -8,8 +8,8 @@ class Ingredient {
     id = json['id'],
     name = json['name'];
 
-    Ingredient copy() {
-      Ingredient copy = new Ingredient(id: id, name: name);
-      return copy;
-    }
+  Ingredient copy() {
+    Ingredient copy = new Ingredient(id: id, name: name);
+    return copy;
+  }
 }

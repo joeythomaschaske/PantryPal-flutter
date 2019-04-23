@@ -1,6 +1,7 @@
 class PersonIngredient {
   int id;
   int ingredientId;
+  String ingredient;
   String customIngredient;
 
   PersonIngredient({this.id, this.ingredientId, this.customIngredient});

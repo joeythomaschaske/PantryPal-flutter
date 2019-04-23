@@ -4,6 +4,7 @@ import '../Home/Home.dart';
 import '../Register/Register.dart';
 import '../Account/Account.dart';
 import '../AddIngredient/AddIngredient.dart';
+import '../Ingredients//Ingredients.dart';
 import '../../contstants.dart' as Constants;
 import '../../utilities/JWT.dart';
 
@@ -20,7 +21,8 @@ class RootState extends State<Root> {
     Constants.REGISTER: Register(),
     Constants.HOME: Home(),
     Constants.ACCOUNT: Account(),
-    Constants.ADDINGREDIENT: AddIngredient()
+    Constants.ADDINGREDIENT: AddIngredient(),
+    Constants.INGREDIENTS : Ingredients()
   };
 
   @override
