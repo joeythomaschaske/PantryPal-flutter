@@ -9,6 +9,7 @@ import 'utilities/ApiGateway.dart';
 import 'models/User.dart';
 
 void main() async {
+  print('dev');
   User u;
   final storage = new FlutterSecureStorage();
   bool authenticated = false;
@@ -28,7 +29,15 @@ void main() async {
       results[3] != null &&
       results[4] != null &&
       results[5] != null &&
-      results[6] != null) {
+      results[6] != null &&
+      results != null &&
+      results[0] != "null" &&
+      results[1] != "null" &&
+      results[2] != "null" &&
+      results[3] != "null" &&
+      results[4] != "null" &&
+      results[5] != "null" &&
+      results[6] != "null") {
     u = new User(results[3], results[4], results[5]);
     bool idTokenActive = JWT.isActive(results[0]);
     bool refreshTokenActive = JWT.refreshTokenActive(results[6]);

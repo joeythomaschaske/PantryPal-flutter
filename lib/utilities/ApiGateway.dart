@@ -39,6 +39,7 @@ class ApiGateway {
         "password" : password
       })
     );
+    
     return json.decode(response.body);
   }
 
@@ -105,11 +106,12 @@ class ApiGateway {
     );
     await storage.deleteAll();
     Map<String, dynamic> body = json.decode(response.body);
-    if (body.containsKey('error')) {
+    if (body.containsKey('error') || response.statusCode != 200) {
       return false;
     }
     return true;
   }
+
   static Future<List<Ingredient>> getIngredients(BuildContext context) async {
     EnvironmentContainerState environment = EnvironmentContainer.of(context);
     FlutterSecureStorage storage = new FlutterSecureStorage();
@@ -124,6 +126,11 @@ class ApiGateway {
         'Authorization' : 'Bearer ' + identityToken
       },
     );
+
+    if (response.statusCode != 200) {
+      return List<Ingredient>();
+    }
+
     Map<String, dynamic> result = json.decode(response.body);
     List rawIngredients = result['ingredients'];
 
@@ -152,6 +159,10 @@ class ApiGateway {
       })
     );
 
+    if (response.statusCode != 200) {
+      return List<PersonIngredient>();
+    }
+
     Map<String, dynamic> result = json.decode(response.body);
     List rawPersonIngredients = result['ingredients'];
 
@@ -159,7 +170,65 @@ class ApiGateway {
       return PersonIngredient.fromJson(ingredient);
     }).toList();
     return personIngredients;
+  }
 
+  static Future<List<PersonIngredient>> getPersonIngredients(BuildContext context) async {
+    EnvironmentContainerState environment = EnvironmentContainer.of(context);
+    FlutterSecureStorage storage = new FlutterSecureStorage();
+    String identityToken = await storage.read(key: 'idToken');
+
+    if (!JWT.isActive(identityToken)) {
+      Map<String, dynamic> newTokens = await ApiGateway.refresh(context);
+      identityToken = newTokens['identityToken'];
+    }
+
+    final response = await http.get(environment.baseUrl + '/getPersonIngredients',
+      headers: {
+        'Authorization' : 'Bearer ' + identityToken
+      }
+    );
+
+    if (response.statusCode != 200) {
+      return List<PersonIngredient>();
+    }
+
+    Map<String, dynamic> result = json.decode(response.body);
+    List rawPersonIngredients = result['personIngredients'];
+
+    List<PersonIngredient> personIngredients = rawPersonIngredients.map((ingredient) {
+      PersonIngredient p = PersonIngredient();
+      p.id = ingredient['id'];
+      p.ingredient = ingredient['ingredient']['name'];
+      p.customIngredient = ingredient['custom_ingredient'];
+      return p;
+    }).toList();
+    return personIngredients;
+  }
+
+  static Future<bool> archivePersonIngredient(BuildContext context, int personIngredientId) async {
+    EnvironmentContainerState environment = EnvironmentContainer.of(context);
+    FlutterSecureStorage storage = new FlutterSecureStorage();
+    String identityToken = await storage.read(key: 'idToken');
+
+    if (!JWT.isActive(identityToken)) {
+      Map<String, dynamic> newTokens = await ApiGateway.refresh(context);
+      identityToken = newTokens['identityToken'];
+    }
+
+    final response = await http.post(environment.baseUrl + '/archivePersonIngredient',
+      headers: {
+        'Authorization' : 'Bearer ' + identityToken
+      },
+      body: json.encode({
+        'personIngredientId' : personIngredientId,
+        'archived': true
+      })
+    );
+
+    if (response.statusCode != 200) {
+      return false;
+    }
+
+    return true;
   }
 }
-
