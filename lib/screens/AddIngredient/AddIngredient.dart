@@ -67,7 +67,8 @@ class AddIngredientState extends State<AddIngredient> {
       personIngredientsToInsert.add(personIngredient);
     }); 
 
-    await ApiGateway.createUserIngredients(context, personIngredientsToInsert);
+    List<PersonIngredient> newIngredients = await ApiGateway.createUserIngredients(context, personIngredientsToInsert);
+    String message = newIngredients.length > 0 ? 'Ingredients added to inventory' : 'We are having problems adding ingredients. Try again later';
     setState(() {
       saving = false;
       selectedIngredients = List<Ingredient>();
@@ -75,7 +76,7 @@ class AddIngredientState extends State<AddIngredient> {
     scaffoldKey.currentState.showSnackBar(
       SnackBar(
         content: Text(
-          'Ingredients added to inventory',
+          message,
           style: TextStyle(
             fontSize: 20
           ),
